@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+    <title>FusionCharts Dev Samples (using JSON)</title>
+    <link href="../../assets/css/main.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../../assets/js/libs/sort.js"></script>
+    <script type="text/javascript" src="../../assets/js/libs/nedb.js"></script>
+    <script type="text/javascript" src="../../assets/js/libs/lib.js"></script>
+    <script type="text/javascript" src="../../assets/js/libs/data.js"></script>
+    <script type="text/javascript" src="../../assets/js/scripts/app.js"></script>
+    
+</head>
+
+<body>
+    <div></div>
+    
+    <div>
+       
+    </div>
+    <div id="div_tab">
+        <div id="div_listOfTable"></div>
+        <div id="div_info" class="wrapper"></div>
+    </div>
+
+    <div class="wrapper">
+
+        <div class="block">
+            <label for="numrow">Number of rows</label>
+            <input type="text" id="numrow" value="10000">
+        </div>
+        <div id="" class="block">
+            <select id="table_add"></select>
+            <button class="btn" id="btn_addData" onclick="addTableData()">Go</button>
+        </div>
+        
+        <div id="table_operations">
+            <div class="label">Select the operation first</div>
+            <div id="div_operationList"></div>
+            <div id="div_operation"></div>
+            <div id="div_operation_comment"></div>
+            
+        </div>
+
+        <div>
+            <div class="label">Benchmark results</div><br/>
+            <table class="table-bordered" id="tbl_benchmark">
+                
+            </table>
+        </div>
+
+    </div><!-- wrapper  End-->
+
+    
+    <script type="text/javascript" src="scripts/ui.js"></script>
+    <script type="text/javascript" src="scripts/operations.js"></script>
+    <script type="text/javascript" src="scripts/app.js"></script>
+</body>
+
+</html>
