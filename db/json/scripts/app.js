@@ -1,8 +1,9 @@
 function addDataButtons() {
-    var container = document.getElementById("table_add"),
-        i;
-    for (i in dataStore) {
-        container.innerHTML += "&nbsp;&nbsp;<option value='"+i+"' class='add_table__data_botton_class'>Add to Table \"" + i + "\"</option>";
+    var container = document.getElementById("table_add");
+    if(typeof container != "undefined" && container != null) {
+        for (var i in dataStore) {
+            container.innerHTML += "&nbsp;&nbsp;<option value='"+i+"' class='add_table__data_botton_class'>Add to Table \"" + i + "\"</option>";
+        }    
     }
 }
 

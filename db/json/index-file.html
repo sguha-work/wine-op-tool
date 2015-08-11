@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+    <title>FusionCharts Dev Samples (using JSON)</title>
+    <link href="../../assets/css/main.css" type="text/css" rel="stylesheet">
+    <script type="text/javascript" src="../../assets/js/libs/sort.js"></script>
+    <script type="text/javascript" src="../../assets/js/libs/nedb.js"></script>
+    <script type="text/javascript" src="../../assets/js/libs/lib.js"></script>
+    <script type="text/javascript" src="../../assets/js/libs/data.js"></script>
+    <script type="text/javascript" src="../../assets/js/scripts/app.js"></script>
+    <script type="text/javascript">
+        var url = window.location.href;
+        var globalTableName = "order";
+        var globalDataLimit = 1000,
+        numberOfDataArray = [1000, 2000, 4000, 7000, 10000, 20000, 40000, 70000,100000, 200000, 400000, 700000, 1000000, 7000000, 10000000, 20000000, 40000000, 70000000, 100000000],
+        i,
+        l = numberOfDataArray.length;
+        if(url.indexOf('table')!=-1 || url.indexOf('data-limit')!=-1) {
+            var queryStringArray = url.split("?").pop().split("&");
+            
+            for(var index in queryStringArray) {
+                if(queryStringArray[index].indexOf("table")!=-1) {
+                    globalTableName = queryStringArray[index].split("=").pop();
+                }
+                if(queryStringArray[index].indexOf("data-limit")!=-1) {
+                    globalDataLimit = parseInt(queryStringArray[index].split("=").pop());   
+                }
+            }
+            if(globalDataLimit>0) {
+                for (i = 1; i < l && numberOfDataArray[i] < globalDataLimit; i ++) {
+
+                }
+            } else {
+                globalDataLimit = 1000
+            }
+            var fileName = globalTableName+"_data_"+globalDataLimit+".js";
+            var script = document.createElement("script");
+            script.setAttribute('type', 'text/javascript');
+            script.setAttribute('src', '../../assets/data/json/'+fileName);
+            document.head.appendChild(script);
+            
+        }
+    </script>    
+</head>
+
+<body>
+    <div></div>
+    
+    <div>
+       
+    </div>
+    <div id="div_tab">
+        <div id="div_listOfTable"></div>
+        <div id="div_info" class="wrapper"></div>
+    </div>
+
+    <div class="wrapper">
+
+        <!-- <div class="block">
+            <label for="numrow">Number of rows</label>
+            <input type="text" id="numrow" value="10000">
+        </div>
+        <div id="" class="block">
+            <select id="table_add"></select>
+            <button class="btn" id="btn_addData" onclick="addTableData()">Go</button>
+        </div> -->
+        
+        <div id="table_operations">
+            <div class="label">Select the operation first</div>
+            <div id="div_operationList"></div>
+            <div id="div_operation"></div>
+            <div id="div_operation_comment"></div>
+            
+        </div>
+
+        <div>
+            <div class="label">Benchmark results</div><br/>
+            <table class="table-bordered" id="tbl_benchmark">
+                
+            </table>
+        </div>
+
+    </div><!-- wrapper  End-->
+
+    
+    <script type="text/javascript" src="scripts/ui.js"></script>
+    <script type="text/javascript" src="scripts/operations.js"></script>
+    <script type="text/javascript" src="scripts/app.js"></script>
+</body>
+
+</html>

@@ -1,13 +1,15 @@
 var mainDatabase = [];
 
 function addDataButtons() {
-    var container = document.getElementById("table_add"),
-        i;
-    for (i in dataStore) {
-        container.innerHTML += "&nbsp;&nbsp;<option value='" + i + "' class='add_table__data_botton_class'>Add to Table \"" + i + "\"</option>";
-        // creating the databses
-        mainDatabase[i] = new Nedb();
-    }
+    var container = document.getElementById("table_add");
+        for (var i in dataStore) {
+            if(typeof container != "undefined" && container != null) {
+                container.innerHTML += "&nbsp;&nbsp;<option value='" + i + "' class='add_table__data_botton_class'>Add to Table \"" + i + "\"</option>";
+            }
+            // creating the databses
+            mainDatabase[i] = new Nedb();
+        }    
+    
 }
 
 function addTableData() {

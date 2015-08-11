@@ -240,8 +240,7 @@ var operationArray = {
                             }
                         }
                     }
-                    b.stopTimer(responseObject);
-                    console.log(records);
+                    b.stopTimer(responseObject);                    
                 });    
             });
         },
