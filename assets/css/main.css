@@ -1,0 +1,183 @@
+*{
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.wrapper {
+	margin: 10px 10px 20px;
+}
+
+#div_listOfTable {	
+	border-bottom: 4px solid #BCCACA;
+	margin: 15px 0 5px;
+	overflow: auto;
+}
+
+.block {
+
+	display: inline-block;
+	*zoom:1; *display: inline;
+}
+
+#table_operations {
+	margin: 20px 0;
+	background-color: #FFFFEB;
+	padding: 20px 0;
+	border-top: 1px solid #f3f3e1;
+	border-bottom: 1px solid #f3f3e1;
+}
+
+#div_operationList {
+	display: inline-block;
+	*zoom:1; *display: inline;
+}
+
+#table_operations .label {
+	margin-bottom: 10px;
+}
+
+
+/*Tab*/
+.tab {
+	float: left;
+	padding: 8px 15px;
+	margin:0 2px;
+	background-color: #E0EBEB;
+	color: #2D2F2F;
+	cursor: pointer;
+	border-top-left-radius:2px;
+	border-top-right-radius:2px;
+	text-transform: uppercase;
+}
+
+.tab:hover {
+	background-color: #CAD4D4;
+}
+
+.tab:first-child{
+	margin-left: 10px;
+}
+
+.tab.active {
+	background-color: #BCCACA;
+}
+
+
+/*Table */
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	border: none;
+}
+
+.table-bordered th, .table-bordered td{
+	padding: 8px;
+}
+
+
+.table-bordered {
+	border: 1px solid #ccc;
+}
+
+.table-bordered th, .table-bordered td{
+	border: 1px solid #ccc;
+}
+
+
+.table-bordered th {
+	background-color: #F0F5F5;
+}
+
+
+/* Button */
+.btn {
+	font-size: 14px;
+	line-height: 18px;
+	background-color: #C2D6D6;
+	padding:2px 10px;
+	border: 1px solid #AFC1C1;
+	border-radius: 2px;
+	margin-right: 5px;
+	box-shadow: 1px 1px 1px #dff1f1;
+	cursor: pointer;
+}
+
+.btn:hover, .btn:focus, .btn:active, .btn:visited {
+	background-color: #C8DADA;
+	box-shadow:  none;
+}
+
+.btn:disabled  {
+	cursor: default;
+}
+
+.btn-green {
+	background-color: #478947;
+	border: 1px solid #407B40;
+	color: #fff;
+}
+
+.btn-green:hover, .btn-green:focus, .btn-green:active, .btn-green:visited {
+	background-color: #407B40;
+}
+
+.btn-green:disabled {
+	background-color: #6B8F6B;
+	color: #C1D0C1;
+}
+
+
+/*Form Elements*/
+input[type="text"] {
+	padding: 5px;
+	background-color: #fff;
+	border: 1px solid #ccc;
+}
+
+select {
+	background-color: #fff;
+	border: 1px solid #ccc;
+	padding: 3px 5px;
+}
+
+
+
+
+
+/*
+.add_table__data_botton_class:hover {
+	background-color: #c0bfbf ;
+}
+
+#table_info table {
+	width: 100%;
+	margin-top: 5%;
+}
+
+
+
+#table_operations {
+	height: 30%;
+	width: 100%;
+	border: 1px solid black;
+}
+
+#table_operations table {
+	width: 95%;
+}*/
+
+.div_operation {
+	
+    height: 40px;
+    padding: 5px;
+    width: 500px;
+}
+
+.op_select {
+	margin:5px;
+}
