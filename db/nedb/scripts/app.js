@@ -17,9 +17,14 @@ function addTableData() {
     name = sel.options[sel.selectedIndex].value;
     generateData(parseInt(document.getElementById("numrow").value, 10), dataStore[name], function() {
         if (document.getElementById("dataLength_" + name)) {
-            mainDatabase[name].insert(dataStore[name].data);
-            displayContent(name);
-            dataStore[name].data = [];
+            var b = new Benchmark("ne-db-insert");            
+            b.startTimer();
+            mainDatabase[name].insert(dataStore[name].data, function() {
+                b.stopTimer();
+                displayContent(name);
+                dataStore[name].data = [];    
+            });
+            
         }
     });
 

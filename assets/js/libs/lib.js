@@ -109,7 +109,7 @@ function generateData(no_entry, tableConf, callBack) {
             }
         },
         fieldsIndex = tableConf.fieldsIndex; // this should be created only once and should be reused
-        columnLength = tableConf.fields.length;
+    columnLength = tableConf.fields.length;
     if (!fieldsIndex) {
         fieldsIndex = {};
         for (j = 0; j < columnLength; j++) {
@@ -181,16 +181,34 @@ Benchmark.prototype = {
         }
 
     },
+    pauseTimer: function() {
+        if (benchT._started) {
+            if (!benchT._stopped) {
+                var currentTime = new Date().getTime();
+                if (this._paused) {
+                    this._paused = false;
+                    this.totalPauseTime = (this.totalPauseTime || 0) + (currentTime - this.pauseTime);
+                } else {
+                    this._paused = true;
+                }
+                this.pauseTime = currentTime;
+            } else {
+                console && console.log("Already stopped....");
+            }
+        } else {
+            console && console.log("Not even started...");
+        }
+    },
     stopTimer: function(finishInfo) {
         var benchT = this;
         if (benchT._started) {
             if (!benchT._stopped) {
-                this.finishInfo = finishInfo;
+                benchT.finishInfo = finishInfo;
                 benchT.finishTime = new Date().getTime();
-                benchT.duration = benchT.finishTime - benchT.startTime;
+                benchT.duration = (this._paused ? benchT.pauseTime : benchT.finishTime) - benchT.startTime - (this.totalPauseTime || 0);
                 benchT._stopped = true;
-                if(typeof finishInfo != "undefined") {
-                    benchT.remarks = finishInfo.remarks;//"operation performed on  "+finishInfo["data-length"]+" rows, "+finishInfo["effected-row"]+ " rows effected";
+                if (typeof finishInfo != "undefined") {
+                    benchT.remarks = finishInfo.remarks; //"operation performed on  "+finishInfo["data-length"]+" rows, "+finishInfo["effected-row"]+ " rows effected";
                 }
                 setTimeout(function() {
                     var i, l = benchMarkListner.length;
@@ -226,26 +244,26 @@ function removeBenchMarkingListner(listner) {
 }
 
 var convertNumberToWord = (function(number) {
-    if(number<100) {
+    if (number < 100) {
         return number;
     }
     var word = "";
     var tempData = number.toString();
 
-    if(tempData.length<9) {
+    if (tempData.length < 9) {
         var zero = "";
-        for(var index=0;index<(9-tempData.length); index++) {
+        for (var index = 0; index < (9 - tempData.length); index++) {
             zero += "0";
         }
-        tempData = zero+tempData;
+        tempData = zero + tempData;
     }
-    word = (((tempData[tempData.length-7]!="0")?tempData[tempData.length-7]:"")+((tempData[tempData.length-6]!="0")?tempData[tempData.length-6]:((tempData[tempData.length-7]!=0)?tempData[tempData.length-6]:""))+((tempData[tempData.length-7]!=0||tempData[tempData.length-6]!=0)?" Lakh ":""))+ ((tempData[tempData.length-5]!="0"?tempData[tempData.length-5]:"")+(tempData[tempData.length-4]!="0"?tempData[tempData.length-4]:(tempData[tempData.length-5]!="0"?tempData[tempData.length-4]:""))+((tempData[tempData.length-5]!="0"||tempData[tempData.length-4]!="0")?" Thousand ":"")) + ((tempData[tempData.length-3]!="0")?(tempData[tempData.length-3] + " Hundred "):"") +  ((tempData[tempData.length-2]!="0"?tempData[tempData.length-2]:"")+((tempData[tempData.length-1]!="0")?tempData[tempData.length-1]:((tempData[tempData.length-2]!="0")?tempData[tempData.length-1]:"")));
+    word = (((tempData[tempData.length - 7] != "0") ? tempData[tempData.length - 7] : "") + ((tempData[tempData.length - 6] != "0") ? tempData[tempData.length - 6] : ((tempData[tempData.length - 7] != 0) ? tempData[tempData.length - 6] : "")) + ((tempData[tempData.length - 7] != 0 || tempData[tempData.length - 6] != 0) ? " Lakh " : "")) + ((tempData[tempData.length - 5] != "0" ? tempData[tempData.length - 5] : "") + (tempData[tempData.length - 4] != "0" ? tempData[tempData.length - 4] : (tempData[tempData.length - 5] != "0" ? tempData[tempData.length - 4] : "")) + ((tempData[tempData.length - 5] != "0" || tempData[tempData.length - 4] != "0") ? " Thousand " : "")) + ((tempData[tempData.length - 3] != "0") ? (tempData[tempData.length - 3] + " Hundred ") : "") + ((tempData[tempData.length - 2] != "0" ? tempData[tempData.length - 2] : "") + ((tempData[tempData.length - 1] != "0") ? tempData[tempData.length - 1] : ((tempData[tempData.length - 2] != "0") ? tempData[tempData.length - 1] : "")));
     var flag = 0;
-    for(var index=0;index<=tempData.length-8;index++) {
-        if(tempData[index]!="0") {
-            word = tempData.slice(index, tempData.length-7)+" Crore " + word;
+    for (var index = 0; index <= tempData.length - 8; index++) {
+        if (tempData[index] != "0") {
+            word = tempData.slice(index, tempData.length - 7) + " Crore " + word;
             break;
         }
     }
-    return word+"  ("+number+") ";
+    return word + "  (" + number + ") ";
 });
