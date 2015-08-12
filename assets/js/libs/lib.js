@@ -91,7 +91,7 @@ var possibleTxt = "abcdefghijklmnopqrstuvwxyz0123456789",
     // max no od data can be generated synchronously
     maxIteration = 300000,
 
-    benchMarkListner = [];
+    benchMarkListner = {};
 /*
  * Function that will generate any no of data. 
  * This function checks whether the data can be generated synchronously or not
@@ -109,7 +109,7 @@ function generateData(no_entry, tableConf, callBack) {
             }
         },
         fieldsIndex = tableConf.fieldsIndex; // this should be created only once and should be reused
-        columnLength = tableConf.fields.length;
+    columnLength = tableConf.fields.length;
     if (!fieldsIndex) {
         fieldsIndex = {};
         for (j = 0; j < columnLength; j++) {
@@ -181,23 +181,55 @@ Benchmark.prototype = {
         }
 
     },
-    stopTimer: function(finishInfo) {
-        var benchT = this;
+    pauseTimer: function() {
+        var benchT = this,
+            pauseListner = benchMarkListner["pause"];
         if (benchT._started) {
             if (!benchT._stopped) {
-                this.finishInfo = finishInfo;
-                benchT.finishTime = new Date().getTime();
-                benchT.duration = benchT.finishTime - benchT.startTime;
-                benchT._stopped = true;
-                if(typeof finishInfo != "undefined") {
-                    benchT.remarks = finishInfo.remarks;//"operation performed on  "+finishInfo["data-length"]+" rows, "+finishInfo["effected-row"]+ " rows effected";
+                var currentTime = new Date().getTime();
+                if (benchT._paused) {
+                    benchT._paused = false;
+                    benchT.totalPauseTime = (benchT.totalPauseTime || 0) + (currentTime - benchT.pauseTime);
+                } else {
+                    benchT._paused = true;
                 }
-                setTimeout(function() {
-                    var i, l = benchMarkListner.length;
-                    for (i = 0; i < l; i++) {
-                        benchMarkListner[i](benchT);
-                    }
-                }, 0);
+                benchT.pauseTime = currentTime;
+                if (benchT._paused && pauseListner) {
+                    benchT.duration = benchT.pauseTime - benchT.startTime - (this.totalPauseTime || 0);
+                    setTimeout(function() {
+                        var i, l = pauseListner.length;
+                        for (i = 0; i < l; i++) {
+                            pauseListner[i](benchT);
+                        }
+                    }, 0);
+                }
+            } else {
+                console && console.log("Already stopped....");
+            }
+        } else {
+            console && console.log("Not even started...");
+        }
+    },
+    stopTimer: function(finishInfo) {
+        var stopListner = benchMarkListner["stop"],
+            benchT = this;
+        if (benchT._started) {
+            if (!benchT._stopped) {
+                benchT.finishInfo = finishInfo;
+                benchT.finishTime = new Date().getTime();
+                benchT.duration = (this._paused ? benchT.pauseTime : benchT.finishTime) - benchT.startTime - (this.totalPauseTime || 0);
+                benchT._stopped = true;
+                if (typeof finishInfo != "undefined") {
+                    benchT.remarks = finishInfo.remarks; //"operation performed on  "+finishInfo["data-length"]+" rows, "+finishInfo["effected-row"]+ " rows effected";
+                }
+                if (stopListner) {
+                    setTimeout(function() {
+                        var i, l = stopListner.length;
+                        for (i = 0; i < l; i++) {
+                            stopListner[i](benchT);
+                        }
+                    }, 0);
+                }
             } else {
                 console && console.log("Already stopped....");
             }
@@ -208,44 +240,53 @@ Benchmark.prototype = {
 };
 Benchmark.prototype.constructor = Benchmark;
 
-function addBenchMarkingListner(listner) {
+function addBenchMarkingListner(listner, type) {
+    type = type || "stop";
     if (typeof listner === "function") {
-        benchMarkListner.push(listner);
+        if (!benchMarkListner[type]) {
+            benchMarkListner[type] = [];
+        }
+        benchMarkListner[type].push(listner);
     }
 }
 
-function removeBenchMarkingListner(listner) {
-    var i, len = benchMarkListner.length;
-    if (typeof listner === "function") {
-        for (i = len - 1; i >= 0; i--) {
-            if (benchMarkListner[i] === listner) {
-                benchMarkListner.splice(i, 1);
+function removeBenchMarkingListner(listner, type) {
+    type = type || "stop";
+    var typedListner = benchMarkListner[type];
+    i, len;
+    if (typedListner) {
+        len = typedListner.length;
+        if (typeof listner === "function") {
+            for (i = len - 1; i >= 0; i--) {
+                if (typedListner[i] === listner) {
+                    typedListner.splice(i, 1);
+                }
             }
         }
     }
 }
 
 var convertNumberToWord = (function(number) {
-    if(number<100) {
+    if (number < 100) {
         return number;
     }
     var word = "";
     var tempData = number.toString();
 
-    if(tempData.length<9) {
+    if (tempData.length < 9) {
         var zero = "";
-        for(var index=0;index<(9-tempData.length); index++) {
+        for (var index = 0; index < (9 - tempData.length); index++) {
             zero += "0";
         }
-        tempData = zero+tempData;
+        tempData = zero + tempData;
     }
-    word = (((tempData[tempData.length-7]!="0")?tempData[tempData.length-7]:"")+((tempData[tempData.length-6]!="0")?tempData[tempData.length-6]:((tempData[tempData.length-7]!=0)?tempData[tempData.length-6]:""))+((tempData[tempData.length-7]!=0||tempData[tempData.length-6]!=0)?" Lakh ":""))+ ((tempData[tempData.length-5]!="0"?tempData[tempData.length-5]:"")+(tempData[tempData.length-4]!="0"?tempData[tempData.length-4]:(tempData[tempData.length-5]!="0"?tempData[tempData.length-4]:""))+((tempData[tempData.length-5]!="0"||tempData[tempData.length-4]!="0")?" Thousand ":"")) + ((tempData[tempData.length-3]!="0")?(tempData[tempData.length-3] + " Hundred "):"") +  ((tempData[tempData.length-2]!="0"?tempData[tempData.length-2]:"")+((tempData[tempData.length-1]!="0")?tempData[tempData.length-1]:((tempData[tempData.length-2]!="0")?tempData[tempData.length-1]:"")));
+    word = (((tempData[tempData.length - 7] != "0") ? tempData[tempData.length - 7] : "") + ((tempData[tempData.length - 6] != "0") ? tempData[tempData.length - 6] : ((tempData[tempData.length - 7] != 0) ? tempData[tempData.length - 6] : "")) + ((tempData[tempData.length - 7] != 0 || tempData[tempData.length - 6] != 0) ? " Lakh " : "")) + ((tempData[tempData.length - 5] != "0" ? tempData[tempData.length - 5] : "") + (tempData[tempData.length - 4] != "0" ? tempData[tempData.length - 4] : (tempData[tempData.length - 5] != "0" ? tempData[tempData.length - 4] : "")) + ((tempData[tempData.length - 5] != "0" || tempData[tempData.length - 4] != "0") ? " Thousand " : "")) + ((tempData[tempData.length - 3] != "0") ? (tempData[tempData.length - 3] + " Hundred ") : "") + ((tempData[tempData.length - 2] != "0" ? tempData[tempData.length - 2] : "") + ((tempData[tempData.length - 1] != "0") ? tempData[tempData.length - 1] : ((tempData[tempData.length - 2] != "0") ? tempData[tempData.length - 1] : "")));
     var flag = 0;
-    for(var index=0;index<=tempData.length-8;index++) {
-        if(tempData[index]!="0") {
-            word = tempData.slice(index, tempData.length-7)+" Crore " + word;
+    for (var index = 0; index <= tempData.length - 8; index++) {
+        if (tempData[index] != "0") {
+            word = tempData.slice(index, tempData.length - 7) + " Crore " + word;
             break;
         }
     }
-    return word+"  ("+number+") ";
+    return word + "  (" + number + ") ";
 });
