@@ -35,3 +35,11 @@ addBenchMarkingListner(function() {
     trText += "</tr>";
     document.getElementById('tbl_benchmark').innerHTML += trText;
 });    
+addBenchMarkingListner(function() {
+    var trText = "<tr>";
+    for(var index in window.benchmarkTableElements) {
+        trText += "<td>"+window.benchmarkTableElements[index].manipulate.apply(this, arguments)+"</td>";
+    }
+    trText += "</tr>";
+    document.getElementById('tbl_benchmark').innerHTML += trText;
+},"pause");    

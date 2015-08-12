@@ -91,7 +91,7 @@ var possibleTxt = "abcdefghijklmnopqrstuvwxyz0123456789",
     // max no od data can be generated synchronously
     maxIteration = 300000,
 
-    benchMarkListner = [];
+    benchMarkListner = {};
 /*
  * Function that will generate any no of data. 
  * This function checks whether the data can be generated synchronously or not
@@ -182,16 +182,27 @@ Benchmark.prototype = {
 
     },
     pauseTimer: function() {
+        var benchT = this,
+            pauseListner = benchMarkListner["pause"];
         if (benchT._started) {
             if (!benchT._stopped) {
                 var currentTime = new Date().getTime();
-                if (this._paused) {
-                    this._paused = false;
-                    this.totalPauseTime = (this.totalPauseTime || 0) + (currentTime - this.pauseTime);
+                if (benchT._paused) {
+                    benchT._paused = false;
+                    benchT.totalPauseTime = (benchT.totalPauseTime || 0) + (currentTime - benchT.pauseTime);
                 } else {
-                    this._paused = true;
+                    benchT._paused = true;
                 }
-                this.pauseTime = currentTime;
+                benchT.pauseTime = currentTime;
+                if (benchT._paused && pauseListner) {
+                    benchT.duration = benchT.pauseTime - benchT.startTime - (this.totalPauseTime || 0);
+                    setTimeout(function() {
+                        var i, l = pauseListner.length;
+                        for (i = 0; i < l; i++) {
+                            pauseListner[i](benchT);
+                        }
+                    }, 0);
+                }
             } else {
                 console && console.log("Already stopped....");
             }
@@ -200,7 +211,8 @@ Benchmark.prototype = {
         }
     },
     stopTimer: function(finishInfo) {
-        var benchT = this;
+        var stopListner = benchMarkListner["stop"],
+            benchT = this;
         if (benchT._started) {
             if (!benchT._stopped) {
                 benchT.finishInfo = finishInfo;
@@ -210,12 +222,14 @@ Benchmark.prototype = {
                 if (typeof finishInfo != "undefined") {
                     benchT.remarks = finishInfo.remarks; //"operation performed on  "+finishInfo["data-length"]+" rows, "+finishInfo["effected-row"]+ " rows effected";
                 }
-                setTimeout(function() {
-                    var i, l = benchMarkListner.length;
-                    for (i = 0; i < l; i++) {
-                        benchMarkListner[i](benchT);
-                    }
-                }, 0);
+                if (stopListner) {
+                    setTimeout(function() {
+                        var i, l = stopListner.length;
+                        for (i = 0; i < l; i++) {
+                            stopListner[i](benchT);
+                        }
+                    }, 0);
+                }
             } else {
                 console && console.log("Already stopped....");
             }
@@ -226,18 +240,27 @@ Benchmark.prototype = {
 };
 Benchmark.prototype.constructor = Benchmark;
 
-function addBenchMarkingListner(listner) {
+function addBenchMarkingListner(listner, type) {
+    type = type || "stop";
     if (typeof listner === "function") {
-        benchMarkListner.push(listner);
+        if (!benchMarkListner[type]) {
+            benchMarkListner[type] = [];
+        }
+        benchMarkListner[type].push(listner);
     }
 }
 
-function removeBenchMarkingListner(listner) {
-    var i, len = benchMarkListner.length;
-    if (typeof listner === "function") {
-        for (i = len - 1; i >= 0; i--) {
-            if (benchMarkListner[i] === listner) {
-                benchMarkListner.splice(i, 1);
+function removeBenchMarkingListner(listner, type) {
+    type = type || "stop";
+    var typedListner = benchMarkListner[type];
+    i, len;
+    if (typedListner) {
+        len = typedListner.length;
+        if (typeof listner === "function") {
+            for (i = len - 1; i >= 0; i--) {
+                if (typedListner[i] === listner) {
+                    typedListner.splice(i, 1);
+                }
             }
         }
     }

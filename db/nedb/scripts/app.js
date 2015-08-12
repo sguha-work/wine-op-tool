@@ -11,16 +11,15 @@ function addDataButtons() {
         }    
     
 }
-
+var benchmarkObject = new Benchmark("ne-db-insert");
 function addTableData() {
     var sel = document.getElementById("table_add");
     name = sel.options[sel.selectedIndex].value;
     generateData(parseInt(document.getElementById("numrow").value, 10), dataStore[name], function() {
         if (document.getElementById("dataLength_" + name)) {
-            var b = new Benchmark("ne-db-insert");            
-            b.startTimer();
+            (benchmarkObject._started)?benchmarkObject.pauseTimer():benchmarkObject.startTimer();
             mainDatabase[name].insert(dataStore[name].data, function() {
-                b.stopTimer();
+                benchmarkObject.pauseTimer();
                 displayContent(name);
                 dataStore[name].data = [];    
             });
